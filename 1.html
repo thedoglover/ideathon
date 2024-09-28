@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parents and Teachers Connect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+
+        button {
+            background-color: #28A745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .dashboard {
+            display: none;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        table th {
+            background-color: #007BFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Parents and Teachers Connect</h1>
+</header>
+
+<main id="main-content">
+    <section id="login-page">
+        <h2>Login Page</h2>
+        <button onclick="showRoleSelection()">Get Started</button>
+    </section>
+
+    <section id="role-selection" class="hidden">
+        <h2>Select Your Role</h2>
+        <button onclick="navigateTo('parent')">Parent</button>
+        <button onclick="navigateTo('teacher')">Teacher</button>
+        <button onclick="navigateTo('student')">Student</button>
+    </section>
+
+    <!-- Parent Dashboard -->
+    <section id="parent-page" class="dashboard">
+        <h2>Parent Dashboard</h2>
+        <p>Welcome Parent! Here you can monitor your child's performance.</p>
+
+        <h3>Attendance Monitoring</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="parent-attendance-table-body">
+                <!-- Attendance data will be displayed here -->
+            </tbody>
+        </table>
+        <p id="parent-attendance-percentage">Attendance Percentage: </p>
+
+        <h3>Grades Overview</h3>
+        <table id="parent-grades-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody id="parent-grades-table-body">
+                <!-- Grades data will be displayed here -->
+            </tbody>
+        </table>
+
+        <button onclick="showRoleSelection()">Back to Role Selection</button>
+    </section>
+
+    <!-- Teacher Dashboard -->
+    <section id="teacher-page" class="dashboard">
+        <h2>Teacher Dashboard</h2>
+        <p>Welcome Teacher! Here you can manage student performance.</p>
+
+        <h3>Update Marks</h3>
+        <label for="student-name">Student Name:</label>
+        <input type="text" id="student-name" placeholder="Enter student name"><br><br>
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" placeholder="Enter subject"><br><br>
+        <label for="marks">Marks:</label>
+        <input type="number" id="marks" placeholder="Enter marks"><br><br>
+        <button onclick="updateMarks()">Update Marks</button>
+
+        <button onclick="showRoleSelection()">Back to Role Selection</button>
+    </section>
+
+    <!-- Student Dashboard -->
+    <section id="student-page" class="dashboard">
+        <h2>Student Dashboard</h2>
+        <p>Welcome Student! Here you can view your grades and attendance.</p>
+
+        <h3>Your Attendance</h3>
+        <p id="student-attendance-percentage">Attendance Percentage: </p>
+
+        <h3>Your Grades</h3>
+        <table id="student-grades-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody id="student-grades-table-body">
+                <!-- Grades data will be displayed here -->
+            </tbody>
+        </table>
+
+        <h3>Suggested Subject for Improvement</h3>
+        <p id="suggested-subject"> </p>
+
+        <button onclick="showRoleSelection()">Back to Role Selection</button>
+    </section>
+
+</main>
+
+<script>
+// Sample data
+let studentData = {
+    attendance: [
+        { date: '2024-09-25', status: 'Present' },
+        { date: '2024-09-26', status: 'Absent' }
+    ],
+    grades: {
+        Math: 'B+',
+        Science: 'A-',
+        History: 'C+'
+    },
+    attendancePercentage: 75
+};
+
+// Function to show the role selection
+function showRoleSelection() {
+    document.getElementById('login-page').classList.add('hidden');
+    document.getElementById('role-selection').classList.remove('hidden');
+}
+
+// Function to navigate to the selected role's dashboard
+function navigateTo(role) {
+    document.querySelectorAll('.dashboard').forEach(section => section.classList.add('hidden'));
+
+    if (role === 'parent') {
+        document.getElementById('parent-page').classList.remove('hidden');
+        loadParentData();
+    } else if (role === 'teacher') {
+        document.getElementById('teacher-page').classList.remove('hidden');
+    } else if (role === 'student') {
+        document.getElementById('student-page').classList.remove('hidden');
+        loadStudentData();
+    }
+}
+
+// Function to load parent-specific data
+function loadParentData() {
+    const attendanceBody = document.getElementById('parent-attendance-table-body');
+    const gradesBody = document.getElementById('parent-grades-table-body');
+    const attendancePercentage = document.getElementById('parent-attendance-percentage');
+
+    // Populate attendance data
+    attendanceBody.innerHTML = '';
+    studentData.attendance.forEach(item => {
+        attendanceBody.innerHTML += `<tr><td>${item.date}</td><td>${item.status}</td></tr>`;
+    });
+
+    // Populate grades data
+    gradesBody.innerHTML = '';
+    for (let subject in studentData.grades) {
+        gradesBody.innerHTML += `<tr><td>${subject}</td><td>${studentData.grades[subject]}</td></tr>`;
+    }
+
+    // Display attendance percentage
+    attendancePercentage.textContent = `Attendance Percentage: ${studentData.attendancePercentage}%`;
+}
+
+// Function to load student-specific data
+function loadStudentData() {
+    const gradesBody = document.getElementById('student-grades-table-body');
+    const attendancePercentage = document.getElementById('student-attendance-percentage');
+    const suggestedSubject = document.getElementById('suggested-subject');
+
+    // Populate grades data
+    gradesBody.innerHTML = '';
+    for (let subject in studentData.grades) {
+        gradesBody.innerHTML += `<tr><td>${subject}</td><td>${studentData.grades[subject]}</td></tr>`;
+    }
+
+    // Display attendance percentage
+    attendancePercentage.textContent = `Attendance Percentage: ${studentData.attendancePercentage}%`;
+
+    // Suggest the subject with the lowest grade
+    let lowestSubject = Object.keys(studentData.grades).reduce((a, b) => {
+        return studentData.grades[a] < studentData.grades[b] ? a : b;
+    });
+    suggestedSubject.textContent = `Focus on ${lowestSubject} to improve your performance.`;
+}
+
+// Function to update marks (for teacher)
+function updateMarks() {
+    const student = document.getElementById('student-name').value;
+    const subject = document.getElementById('subject').value;
+    const marks = document.getElementById('marks').value;
+
+    if (student && subject && marks) {
+        studentData.grades[subject] = marks;
+        alert(`Marks updated for ${student} in ${subject}: ${marks}`);
+    } else {
+        alert('Please fill all fields to update marks.');
+    }
+}
+
+</script>
+
+</body>
+</html>
